@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -78,8 +79,11 @@ func getServerStatus(name string) {
 	servers := getAllServers()
 	for _, server := range servers {
 		status := boolToStatusString(server.Status)
-		if server.Name == name {
-			fmt.Printf("%s is %s!", name, status)
+		// fmt.Printf("Server: %s - Status: %s\n", server.Name, status)
+		// fmt.Printf("%t\n", name == strings.ToLower(server.Name))
+		if server.Name == strings.ToLower(name) {
+			fmt.Printf("%s is %s", name, status)
+			break
 		}
 	}
 }
