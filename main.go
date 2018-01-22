@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -39,7 +39,7 @@ func main() {
 }
 
 func getAllServers() []server {
-	realms := realms{}
+	// realms := realms{}
 	cl := http.Client{
 		Timeout: time.Second * 2,
 	}
@@ -58,21 +58,17 @@ func getAllServers() []server {
 		os.Exit(1)
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("Read Error:", err)
-		os.Exit(1)
-	}
+	defer res.Body.Close()
 
-	jsonErr := json.Unmarshal(body, &realms)
-	if jsonErr != nil {
-		fmt.Println("JSON Error:", jsonErr)
+	var r realms
+
+	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+		log.Println(err)
 	}
-	s := realms.Servers
 	// for _, s := range realms.Servers {
 	// 	fmt.Println(s.Name)
 	// }
-	return s
+	return r.Servers
 }
 
 func getServerStatus(name string) {
@@ -80,10 +76,9 @@ func getServerStatus(name string) {
 	for _, server := range servers {
 		status := boolToStatusString(server.Status)
 		// fmt.Printf("Server: %s - Status: %s\n", server.Name, status)
-		// fmt.Printf("%t\n", name == strings.ToLower(server.Name))
-		if server.Name == strings.ToLower(name) {
+		// fmt.Printf("%t\n", strings.ToLower(name) == strings.ToLower(server.Name))
+		if strings.ToLower(server.Name) == strings.ToLower(name) {
 			fmt.Printf("%s is %s", name, status)
-			break
 		}
 	}
 }
