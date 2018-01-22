@@ -28,11 +28,12 @@ type server struct {
 	ConnectedRealms string `json:"-"`
 }
 
-const rURL = "https://us.api.battle.net/wow/realm/status?locale=en_US&apikey=m8m9as776592afjxmwx45vy8yabgpngb"
-
 var realm = flag.String("realm", "medivh", "the individual realm's status to check")
+var rURL = ""
 
 func main() {
+	cfg := LoadConfig()
+	rURL = cfg.APIKey
 	flag.Parse()
 	r := *realm
 	getServerStatus(strings.ToLower(r))
