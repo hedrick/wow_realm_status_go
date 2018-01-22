@@ -35,7 +35,7 @@ var realm = flag.String("realm", "medivh", "the individual realm's status to che
 func main() {
 	flag.Parse()
 	r := *realm
-	getServerStatus(r)
+	getServerStatus(strings.ToLower(r))
 }
 
 func getAllServers() []server {
@@ -69,13 +69,21 @@ func getAllServers() []server {
 }
 
 func getServerStatus(name string) {
-	servers := getAllServers()
-	for _, server := range servers {
-		status := boolToStatusString(server.Status)
-		if strings.ToLower(server.Name) == strings.ToLower(name) {
-			fmt.Printf("%s's status is: %s!", strings.Title(name), status)
-		}
+	sm := serverMap()
+	if s, ok := sm[name]; ok {
+		fmt.Printf("%s's status is: %s!", strings.Title(name), s)
+	} else {
+		fmt.Printf("%s not found in list of servers.", strings.Title(name))
 	}
+}
+
+func serverMap() map[string]string {
+	servers := getAllServers()
+	sm := make(map[string]string)
+	for _, server := range servers {
+		sm[strings.ToLower(server.Name)] = boolToStatusString(server.Status)
+	}
+	return sm
 }
 
 func boolToStatusString(status bool) string {
