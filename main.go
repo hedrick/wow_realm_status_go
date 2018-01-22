@@ -65,9 +65,6 @@ func getAllServers() []server {
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		log.Println(err)
 	}
-	// for _, s := range realms.Servers {
-	// 	fmt.Println(s.Name)
-	// }
 	return r.Servers
 }
 
@@ -75,17 +72,15 @@ func getServerStatus(name string) {
 	servers := getAllServers()
 	for _, server := range servers {
 		status := boolToStatusString(server.Status)
-		// fmt.Printf("Server: %s - Status: %s\n", server.Name, status)
-		// fmt.Printf("%t\n", strings.ToLower(name) == strings.ToLower(server.Name))
 		if strings.ToLower(server.Name) == strings.ToLower(name) {
-			fmt.Printf("%s is %s", name, status)
+			fmt.Printf("%s's status is: %s!", strings.Title(name), status)
 		}
 	}
 }
 
 func boolToStatusString(status bool) string {
 	if status == true {
-		return "up"
+		return "Up"
 	}
-	return "down"
+	return "Down"
 }
